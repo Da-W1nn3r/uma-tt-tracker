@@ -112,7 +112,7 @@
   // Space / Enter advances the round (start round -> top 3 -> bottom 3 -> finish)
   document.addEventListener('keydown', e => {
     if ((e.key !== ' ' && e.key !== 'Enter') || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
-    if ($('picker').open || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if ($('picker').open || $('about').open || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
     e.preventDefault(); // also stops a focused button from firing a second click
     if (!$('round').hidden && !$('next').disabled) $('next').click();
   });
@@ -125,6 +125,25 @@
     render();
   };
   $('clear-picks').onclick = () => { if (phase === 'top') top = {}; else bot = {}; render(); };
+  // About dialog: renders info.md (headings, bullets, `code`) on first open
+  $('about-btn').onclick = async () => {
+    $('about').showModal();
+    if ($('about').dataset.loaded) return;
+    try {
+      const r = await fetch('info.md'); if (!r.ok) throw 0;
+      const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/`([^`]+)`/g, '<code>$1</code>');
+      let html = '', list = false;
+      for (const l of (await r.text()).split(/\r?\n/)) {
+        const li = l.match(/^- (.*)/);
+        if (list && !li) { html += '</ul>'; list = false; }
+        if (li) { if (!list) { html += '<ul>'; list = true; } html += '<li>' + esc(li[1]) + '</li>'; }
+        else if (/^#+ /.test(l)) { const n = l.match(/^#+/)[0].length; html += '<h' + n + '>' + esc(l.replace(/^#+ /, '')) + '</h' + n + '>'; }
+        else if (l.trim()) html += '<p>' + esc(l) + '</p>';
+      }
+      $('about-body').innerHTML = html + (list ? '</ul>' : '');
+      $('about').dataset.loaded = 1;
+    } catch { $('about-body').textContent = 'Could not load info.md.'; }
+  };
   $('reset-all').onclick = () => { if (confirm('Clear the roster and all history?')) { state = blank(); undo = []; top = {}; bot = {}; phase = 'replace'; save(); render(); } };
   $('export').onclick = () => {
     const a = document.createElement('a');

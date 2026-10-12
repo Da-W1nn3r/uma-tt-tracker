@@ -12,6 +12,7 @@
   <div id="phase" class="phase"></div>
   <div id="save-status" class="save-status"></div>
   <div class="actions">
+    <button id="about-btn" title="How the rating works">ⓘ About</button>
     <button id="export">Export</button>
     <button id="import">Import</button>
     <button id="reset-all" class="danger">Clear all</button>
@@ -48,6 +49,13 @@
     <input id="search" type="search" placeholder="Search uma…" autocomplete="off">
     <div id="grid"></div>
     <div class="dlg-actions"><button value="cancel">Cancel</button></div>
+  </form>
+</dialog>
+
+<dialog id="about">
+  <form method="dialog">
+    <div id="about-body">Loading…</div>
+    <div class="dlg-actions"><button value="close">Close</button></div>
   </form>
 </dialog>
 
