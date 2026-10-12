@@ -1,0 +1,49 @@
+:root{--bg:#14161c;--card:#1f232d;--line:#333a48;--text:#e8eaf0;--mute:#8b93a5;--acc:#6aa9ff;--up:#4cc38a;--down:#ef6b6b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line)}
+h1{font-size:18px;margin:0}h2{font-size:15px;margin:0 0 8px}
+.phase{padding:3px 10px;border-radius:99px;background:var(--card);border:1px solid var(--line);color:var(--acc)}
+.save-status{color:var(--mute);font-size:12px}
+.save-status.err{color:var(--down)}
+.actions{margin-left:auto;display:flex;gap:6px}
+button{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--acc)}button:disabled{opacity:.4;cursor:default}
+button.danger:hover{border-color:var(--down)}
+main{padding:16px 20px;display:grid;gap:20px}
+#roster{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:12px}
+.col h3{margin:0 0 6px;text-transform:capitalize;font-size:13px;color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px;display:grid;grid-template-columns:48px 1fr;gap:8px;align-items:center;min-height:64px}
+.card.empty{border-style:dashed;cursor:pointer;grid-template-columns:1fr;text-align:center;color:var(--mute)}
+.card.empty:hover{border-color:var(--acc);color:var(--acc)}
+.avatar{width:48px;height:48px;border-radius:50%;background:#2c3240;object-fit:cover;object-position:top;display:grid;place-items:center;font-size:11px;color:var(--mute)}
+.name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rating{font-variant-numeric:tabular-nums}
+.delta.up{color:var(--up)}.delta.down{color:var(--down)}
+.card .row{display:flex;gap:6px;margin-top:4px;grid-column:1 / -1}
+.card select{flex:1;background:#14161c;color:var(--text);border:1px solid var(--line);border-radius:4px;padding:2px}
+.card .swap{padding:2px 8px;font-size:12px}
+.card.picked-top{outline:2px solid var(--up)}.card.picked-bot{outline:2px solid var(--down)}
+.hint{color:var(--mute);margin:0 0 8px}
+#board{margin:0;padding-left:24px;columns:2 260px}
+#board li{padding:2px 0}#board .r{float:right;margin-right:16px;font-variant-numeric:tabular-nums;color:var(--mute)}
+#chart-wrap{position:relative;background:var(--card);border:1px solid var(--line);border-radius:8px}
+#chart{width:100%;height:380px;display:block}
+#tip{position:absolute;pointer-events:none;background:#000c;border:1px solid var(--line);padding:4px 8px;border-radius:4px;white-space:nowrap}
+#legend{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;color:var(--mute)}
+#legend span{cursor:pointer}#legend span.off{opacity:.3}
+#legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px}
+dialog{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;width:min(720px,94vw);padding:16px}
+dialog::backdrop{background:#0009}
+#search{width:100%;padding:8px;margin-bottom:10px;background:#14161c;color:var(--text);border:1px solid var(--line);border-radius:6px}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;max-height:55vh;overflow:auto}
+.opt{border:1px solid var(--line);border-radius:8px;padding:6px;text-align:center;cursor:pointer;font-size:12px}
+.opt:hover:not(.taken){border-color:var(--acc)}.opt.taken{opacity:.3;cursor:not-allowed}.opt.prev{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.opt .avatar{margin:0 auto 4px;width:56px;height:56px}
+.dlg-actions{margin-top:10px;text-align:right}
+@media(max-width:900px){#roster{grid-template-columns:repeat(2,1fr)}}
+button.primary{background:var(--acc);color:#0b1220;border-color:var(--acc);font-weight:600}
+.card.clickable{cursor:pointer}.card.clickable:hover{border-color:var(--acc)}.card.disabled{opacity:.35;cursor:not-allowed}
+.badge{position:absolute;top:-8px;right:-8px;min-width:26px;height:26px;padding:0 6px;border-radius:13px;display:grid;place-items:center;font-weight:700;font-size:12px;color:#0b1220}
+.card{position:relative}.badge.top{background:var(--up)}.badge.bot{background:var(--down)}
+.opt small{display:block;color:var(--mute)}
