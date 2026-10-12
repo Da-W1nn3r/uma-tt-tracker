@@ -17,3 +17,12 @@ assert.ok(a > 1500 && b < 1300 && a - b > 300);
 const c = R.recenter([1150, 1050, 1000, 1300]);
 assert.ok(Math.abs(c.reduce((x, y) => x + y) / c.length - 1000) < 1e-9);
 assert.equal(c[0] - c[1], 100);
+
+// drift: no-op at baseRating, pulls outliers toward it, never overshoots past it
+assert.equal(R.drift(1000), 1000);
+assert.equal(R.drift(1200), 1200 - Math.pow(2, 200 / 200));
+assert.equal(R.drift(800), 800 + Math.pow(2, 200 / 200));
+assert.equal(R.drift(1000.5), 1000); // step (~1.0017) would overshoot past baseRating
+assert.equal(R.drift(999.5), 1000);
+// bigger outliers drift by more (exponential in distance)
+assert.ok(Math.abs(1400 - R.drift(1400)) > Math.abs(1200 - R.drift(1200)));

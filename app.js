@@ -1,5 +1,5 @@
 (function () {
-  const { CONFIG, APTITUDES, PLACEMENTS, newRating } = Rating;
+  const { CONFIG, APTITUDES, PLACEMENTS, newRating, drift } = Rating;
   const KEY = 'uma-tt-tracker-v1';
   const UMAS = window.UMAS, byId = new Map(UMAS.map(u => [u.id, u]));
   const COLORS = ['#6aa9ff','#ff8f6b','#4cc38a','#e5c84d','#c58bff','#ff6bb5','#5ad1d1','#b5e04d','#ff6b6b','#8b9bff','#ffb36b','#6bd19a','#d98bd9','#9fb0c8','#e0a070'];
@@ -85,6 +85,7 @@
     const rated = allSlots().filter(x => x.s).map(x => ({ s: x.s, key: x.key }));
     for (const { s, key } of rated) {
       if (key in byKey) s.rating = newRating(s.rating, byKey[key], s.rounds);
+      s.rating = drift(s.rating);
       s.rounds++; // the adjusting period ticks down every round, placed or not
     }
     // Keep the mean of all rated umas at the base rating (1000) by shifting everyone equally.

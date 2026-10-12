@@ -19,6 +19,16 @@
     return Math.min(cfg.maxRating, Math.max(cfg.minRating, next));
   }
 
+  // Every round, pull a rating back toward baseRating by an amount that grows exponentially
+  // with its distance from it — a small nudge near 1000, a much bigger one for outliers —
+  // so ratings can't diverge without bound. Never overshoots past baseRating.
+  function drift(rating, cfg = CONFIG) {
+    const diff = rating - cfg.baseRating;
+    if (!diff) return rating;
+    const step = Math.pow(2, Math.abs(diff) / 200);
+    return diff > 0 ? Math.max(cfg.baseRating, rating - step) : Math.min(cfg.baseRating, rating + step);
+  }
+
   // Shift every rating by the same amount so their mean is baseRating (1000). Clamping at the
   // min/max caps can leave the mean slightly off, so repeat until it settles.
   function recenter(ratings, cfg = CONFIG) {
@@ -38,6 +48,6 @@
     bot3: -1, bot2: -2, bot1: -3,
   };
 
-  root.Rating = { CONFIG, APTITUDES, PLACEMENTS, effectivePeriod, newRating, recenter };
+  root.Rating = { CONFIG, APTITUDES, PLACEMENTS, effectivePeriod, newRating, drift, recenter };
   if (typeof module !== 'undefined') module.exports = root.Rating;
 })(typeof window !== 'undefined' ? window : globalThis);
