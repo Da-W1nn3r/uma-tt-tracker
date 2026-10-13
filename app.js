@@ -268,7 +268,9 @@
     if (!t) { tip.hidden = true; return; }
     const r = $('chart-wrap').getBoundingClientRect();
     tip.textContent = t; tip.hidden = false;
-    tip.style.left = (e.clientX - r.left + 12) + 'px'; tip.style.top = (e.clientY - r.top - 28) + 'px';
+    let x = e.clientX - r.left + 12;
+    if (x + tip.offsetWidth > r.width) x = e.clientX - r.left - 12 - tip.offsetWidth;
+    tip.style.left = Math.max(0, x) + 'px'; tip.style.top = (e.clientY - r.top - 28) + 'px';
   });
   $('chart').addEventListener('mouseleave', () => { tip.hidden = true; });
   window.addEventListener('resize', drawChart);
