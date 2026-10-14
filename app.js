@@ -234,8 +234,12 @@
       const h = x.s.history, at = Math.max(0, h.map(p => !!p.swap).lastIndexOf(true));
       return { ...x, run: h.slice(at), color: COLORS[APTITUDES.indexOf(x.apt) * 3 + x.i] };
     });
-    // the window opens when the longest-serving uma on the team joined
-    const r0 = Math.min(state.round, ...series.map(x => x.run[0].round));
+    // window start: last N rounds, the longest-serving uma's join round, or round 0
+    const range = $('range').value;
+    const r0 = range === 'all' ? 0
+      : range === 'oldest' ? Math.min(state.round, ...series.map(x => x.run[0].round))
+      : Math.max(0, state.round - +range);
+    for (const x of series) x.run = x.run.filter(p => p.round >= r0);
     $('legend').innerHTML = series.map(x => `<span data-k="${x.key}" class="${hidden.has(x.key) ? 'off' : ''}"><i style="background:${x.color}"></i>${byId.get(x.s.id).name}</span>`).join('');
     $('legend').querySelectorAll('span').forEach(el => el.onclick = () => { hidden.has(el.dataset.k) ? hidden.delete(el.dataset.k) : hidden.add(el.dataset.k); drawChart(); });
     const vis = series.filter(x => !hidden.has(x.key));
@@ -274,6 +278,7 @@
   });
   $('chart').addEventListener('mouseleave', () => { tip.hidden = true; });
   window.addEventListener('resize', drawChart);
+  $('range').onchange = drawChart;
 
   render();
 })();

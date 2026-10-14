@@ -37,7 +37,15 @@
   </section>
 
   <section>
-    <h2>Rating over time</h2>
+    <h2>Rating over time
+      <select id="range" title="How much history the chart shows">
+        <option value="25">25 rounds</option>
+        <option value="50">50 rounds</option>
+        <option value="100">100 rounds</option>
+        <option value="oldest" selected>Oldest member</option>
+        <!-- <option value="all">All time</option> -->
+      </select>
+    </h2>
     <div id="chart-wrap"><svg id="chart"></svg><div id="tip" hidden></div></div>
     <div id="legend"></div>
   </section>
