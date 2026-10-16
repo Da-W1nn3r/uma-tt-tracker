@@ -174,6 +174,17 @@
     top: ['Top 3 placers', 'Click a uma to cycle it through 1st, 2nd, 3rd (Top 1 = +3 … Top 3 = +1).', 'Next: pick bottom 3'],
     bottom: ['Bottom 3 placers', 'Click a uma to cycle it through Bottom 1 (worst, −3), 2, 3 (−1). Top 3 umas are locked.', 'Finish round'],
   };
+  // FLIP: run fn (which re-renders), then slide each card from its old position to its new one
+  function flip(fn) {
+    const first = new Map([...document.querySelectorAll('.card[data-id]')].map(el => [el.dataset.id, el.getBoundingClientRect()]));
+    fn();
+    for (const el of document.querySelectorAll('.card[data-id]')) {
+      const a = first.get(el.dataset.id), b = el.getBoundingClientRect();
+      if (!a || (a.left === b.left && a.top === b.top)) continue;
+      el.animate([{ transform: `translate(${a.left - b.left}px, ${a.top - b.top}px)` }, { transform: 'none' }],
+        { duration: 250, easing: 'cubic-bezier(.2,.8,.2,1)' });
+    }
+  }
   function render() {
     const full = rosterFull();
     $('phase').textContent = !full ? `1 · Filling the roster (${filled().length}/15)`
@@ -198,7 +209,7 @@
         if (!s) { c.className = 'card empty'; c.textContent = '+ Add uma'; c.onclick = () => { openPicker(apt, i); render(); }; }
         else {
           const u = byId.get(s.id), key = apt + i;
-          c.className = 'card';
+          c.className = 'card'; c.dataset.id = s.id;
           c.innerHTML = `${avatar(u, outfitOf(s))}<div><div class="name" title="${u.name}">${u.name}</div>
             <div class="rating">${s.rating.toFixed(1)} ${delta(s)}</div></div>`;
           const badge = (cls, txt) => c.insertAdjacentHTML('beforeend', `<span class="badge ${cls}">${txt}</span>`);
@@ -215,6 +226,47 @@
             c.insertAdjacentHTML('beforeend', '<div class="row"><button class="swap">Reset</button></div>');
             c.querySelector('.swap').onclick = () => { openPicker(apt, i); render(); };
           }
+        }
+        // drag to reorder within a distance; not while top/bottom picks are keyed to slot positions
+        // The dragged card's spot looks empty; hovering another card swaps it into that spot live.
+        // The DOM is swapped in place (no re-render) because removing the dragged node would cancel the drag.
+        if (!(full && phase !== 'replace')) {
+          // Pointer-based rather than native drag and drop, so the card under the cursor is a fully opaque clone.
+          if (s) c.onpointerdown = e => {
+            if (e.button !== 0 || e.pointerType === 'touch' || e.target.closest('button')) return;
+            e.preventDefault(); // no text selection or native image drag
+            const r = c.getBoundingClientRect(), sx = e.clientX, sy = e.clientY;
+            let ghost = null;
+            const move = ev => {
+              if (!ghost) {
+                if (Math.hypot(ev.clientX - sx, ev.clientY - sy) < 5) return;
+                ghost = c.cloneNode(true); ghost.className = 'card ghost'; delete ghost.dataset.id;
+                ghost.style.cssText = `width:${r.width}px;height:${r.height}px;left:${r.left}px;top:${r.top}px`;
+                document.body.appendChild(ghost);
+                c.classList.add('dragging'); document.body.classList.add('dragging-card');
+              }
+              ghost.style.transform = `translate(${ev.clientX - sx}px, ${ev.clientY - sy}px)`;
+              const t = document.elementFromPoint(ev.clientX, ev.clientY), over = t && t.closest('.card');
+              if (!over || over === c || over.parentNode !== col || over.getAnimations().length) return; // not while still sliding
+              const cards = [...col.querySelectorAll('.card')], a = cards.indexOf(c), b = cards.indexOf(over), arr = state.slots[apt];
+              [arr[a], arr[b]] = [arr[b], arr[a]];
+              flip(() => {
+                const [x, y] = a < b ? [c, over] : [over, c], nx = x.nextSibling;
+                if (nx === y) col.insertBefore(y, x); else { col.insertBefore(x, y); col.insertBefore(y, nx); }
+              });
+            };
+            const up = () => {
+              document.removeEventListener('pointermove', move);
+              document.removeEventListener('pointerup', up);
+              document.removeEventListener('pointercancel', up);
+              if (!ghost) return;
+              ghost.remove(); document.body.classList.remove('dragging-card');
+              save(); render(); // re-render rebinds handlers to the new slot indexes
+            };
+            document.addEventListener('pointermove', move);
+            document.addEventListener('pointerup', up);
+            document.addEventListener('pointercancel', up);
+          };
         }
         col.appendChild(c);
       });
