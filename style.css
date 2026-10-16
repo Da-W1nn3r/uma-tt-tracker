@@ -43,6 +43,25 @@ dialog::backdrop{background:#0009}
 .opt .avatar{margin:0 auto 4px;width:56px;height:56px}
 .dlg-actions{margin-top:10px;text-align:right}
 @media(max-width:900px){#roster{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){
+  header{padding:8px 12px;gap:8px}
+  .actions{flex-wrap:wrap}
+  button{padding:5px 9px}
+  main{padding:10px 12px;gap:14px}
+  #roster{grid-template-columns:1fr;gap:6px}
+  .col{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .col h3{grid-column:1 / -1;margin:0}
+  .card{grid-template-columns:1fr;justify-items:center;text-align:center;gap:2px;padding:8px 4px;margin-bottom:0;min-height:0}
+  .card.empty{font-size:12px;min-height:84px;align-content:center}
+  .avatar{width:56px;height:56px}
+  .card .name{display:none}
+  .rating{font-size:14px;line-height:1.2}
+  .rating .delta{display:block;font-size:11px}
+  .card .row{margin-top:2px;width:100%}
+  .card .swap{width:100%;padding:2px 0;font-size:11px}
+  .badge{top:-6px;right:-4px;min-width:22px;height:22px;font-size:11px}
+  #chart{height:280px}
+}
 button.primary{background:var(--acc);color:#0b1220;border-color:var(--acc);font-weight:600}
 .card.clickable{cursor:pointer}.card.clickable:hover{border-color:var(--acc)}.card.disabled{opacity:.35;cursor:not-allowed}
 .badge{position:absolute;top:-8px;right:-8px;min-width:26px;height:26px;padding:0 6px;border-radius:13px;display:grid;place-items:center;font-weight:700;font-size:12px;color:#0b1220}
