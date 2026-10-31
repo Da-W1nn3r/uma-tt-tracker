@@ -219,6 +219,8 @@
             const locked = phase === 'bottom' && top[key];
             c.classList.add(locked ? 'disabled' : 'clickable');
             if (!locked) c.onclick = () => { cycle(picks, key); render(); };
+            // invisible placeholder so the card keeps the same height as in the replace phase
+            c.insertAdjacentHTML('beforeend', '<div class="row" style="visibility:hidden"><button class="swap" tabindex="-1">Reset</button></div>');
           } else if (full) {
             c.insertAdjacentHTML('beforeend', '<div class="row"><button class="swap" title="Replace this uma (pre-filled with the current one)">Reset</button></div>');
             c.querySelector('.swap').onclick = () => { openPicker(apt, i); render(); };
